@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { logout } from '../utils/auth';
 import { useNavigate } from 'react-router-dom';
 import '../css/WeatherPage.css';
@@ -13,7 +13,8 @@ const WeatherPage = () => {
   const navigate = useNavigate();
   const API_KEY = process.env.REACT_APP_OPENWEATHER_KEY;
 
-  const fetchWeather = async (cityName) => {
+  // ✅ Оборачиваем в useCallback, чтобы можно было добавить в useEffect зависимости
+  const fetchWeather = useCallback(async (cityName) => {
     setLoading(true);
     setError('');
     try {
@@ -36,11 +37,12 @@ const WeatherPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [API_KEY]);
 
+  // ✅ Добавляем зависимости: city и fetchWeather
   useEffect(() => {
     fetchWeather(city);
-  }, []); 
+  }, [city, fetchWeather]);
 
   const handleLogout = () => {
     logout();
